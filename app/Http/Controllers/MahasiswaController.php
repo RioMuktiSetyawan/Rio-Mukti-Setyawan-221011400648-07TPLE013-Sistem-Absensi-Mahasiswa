@@ -7,11 +7,10 @@ use Illuminate\Http\Request;
 
 class MahasiswaController extends Controller
 {
-   public function index()
+public function index()
 {
-    // Mengambil data mahasiswa dan mengurutkannya berdasarkan nama secara ASC
-    $mahasiswas = \App\Models\Mahasiswa::orderBy('nama', 'asc')->get();
-
+    // Mengurutkan mahasiswa berdasarkan nama A ke Z
+    $mahasiswas = Mahasiswa::orderBy('nama', 'asc')->get();
     return view('mahasiswa.index', compact('mahasiswas'));
 }
 

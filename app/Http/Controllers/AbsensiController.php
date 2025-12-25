@@ -12,27 +12,26 @@ use Illuminate\Http\Request;
 class AbsensiController extends Controller
 {
     public function index(Request $request)
-        {
-            $mahasiswas = Mahasiswa::all();
-            
-            // Ambil tanggal dari filter, defaultnya hari ini
-            $tanggal = $request->get('tanggal', date('Y-m-d'));
-
-            // Ambil data absensi yang sudah ada di tanggal tersebut
-            $dataAbsen = Absensi::where('tanggal', $tanggal)
-                        ->get()
-                        ->pluck('status', 'mahasiswa_id'); // Format: [mahasiswa_id => status]
-
-            return view('absensi.index', compact('mahasiswas', 'dataAbsen', 'tanggal'));
-        }
-    public function laporan(Request $request)
 {
-    // Ambil semua mahasiswa beserta histori absensinya
-    $mahasiswas = Mahasiswa::with(['absensis' => function($query) use ($request) {
-        if ($request->start_date && $request->end_date) {
-            $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
-        }
-    }])->get();
+    $tanggal = $request->input('tanggal', date('Y-m-d'));
+    
+    // Urutkan nama mahasiswa agar admin mudah mencari nama saat absen
+    $mahasiswas = Mahasiswa::orderBy('nama', 'asc')->get();
+    
+    // Ambil data absen yang sudah ada di tanggal tersebut
+    $dataAbsen = Absensi::where('tanggal', $tanggal)
+                        ->pluck('status', 'mahasiswa_id')
+                        ->toArray();
+
+    return view('absensi.index', compact('mahasiswas', 'tanggal', 'dataAbsen'));
+}
+   public function laporan(Request $request)
+{
+    // Mengambil data mahasiswa urut abjad untuk tabel laporan
+    $mahasiswas = Mahasiswa::orderBy('nama', 'asc')->get();
+    
+    // Logika filter tanggal atau periode laporan Anda...
+    // ...
 
     return view('absensi.laporan', compact('mahasiswas'));
 }
